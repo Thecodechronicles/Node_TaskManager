@@ -21,6 +21,39 @@ app.use(userRouter);  // app.post() or router.post() both have their post method
 // It's just that we have to make 'app' aware of 'router' when we are calling post and get with router and that's why we pass router inside app.use()   
 app.use(taskRouter);
 
+/*
+
+For 'app': (obove explaination's short flow of implementation)
+
+app = express()
+app -- > function(){}
+
+application = {}
+application.process_handle = ....function(){}
+
+methods = [get, post, put, patch]
+methods.forEach(function(method){
+    application[method]  = function(path){
+        .....
+        .....
+        lazyRouter()
+        router.route[method].apply();
+    }
+})
+
+applicationKeys = object.keys(application);
+applicationKeys.forEach(function(prop){
+    propDescriptor = application.prop and other things..
+    object.defineProperty(app, prop, propDescriptor); // net outcome: app.process_handle, app.get, app.post .....so on
+})
+
+
+For 'router': (obove explaination's short flow of implementation)
+
+
+
+*/
+
 
 // app.use(function (req, res, next) {
 //     console.log('Hi Ji !');
