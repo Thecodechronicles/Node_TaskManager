@@ -36,21 +36,63 @@ methods.forEach(function(method){
     application[method]  = function(path){
         .....
         .....
-        lazyRouter()
+        lazyRouter() // lazyRouter will make new Router() like this: this._router = new Router();
+        // The router is initialised when express() is run even if we do not call express.Router
+
+        var router = this._router;
         router.route[method].apply();
     }
 })
 
 applicationKeys = object.keys(application);
-applicationKeys.forEach(function(prop){
-    propDescriptor = application.prop and other things..
+applicationKeys.forEach(function(propName){
+    propDescriptor = application.propName and other things..
     object.defineProperty(app, prop, propDescriptor); // net outcome: app.process_handle, app.get, app.post .....so on
 })
 
 
+
+
 For 'router': (obove explaination's short flow of implementation)
 
+someRouter = express.Router(); // this 'Router' function is the same as abobe 'new Router' explained in " For 'app' "
+// When this 'Router' function runs either as 'new Router' or 'express.Router()', it returns a method router(){} function
+// before return router's __proto__ is set to Router(){} function.. so what ever is property is defined on 'Router' is
+// made available to 'router' as its __proto__
 
+var Router = function (){
+    function router(req, res, next){ }
+
+    setPrototypeOf(router, Router);
+
+    router.params = {}
+    etc..
+
+    return router;
+}
+
+method.concat('all').forEach(function(methodd){
+    Router[method] = function(path){  // net outcome someRouter.get, someRouter.post etc
+        var route = this.route(path) // same as this._router.route() above in " For 'app' " 
+        route[method].apply();
+    }
+});
+
+Router.route = function(){
+    var route = new Route();
+    etc. 
+}
+
+
+
+For 'route': 
+
+The route function (this.route() and this._router.route()) comes from Router's route method mentioned above 
+
+methods.forEach(function (method) {
+  Route.prototype[method] = function () { } // everytime route[method] is called from Router[method] or app.method(application[method]) 
+// this function runs 
+}
 
 */
 
