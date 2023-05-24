@@ -3,12 +3,14 @@ const User = require('../models/user');
 const HandleForError = require('../utils/error-handle');
 // const RandomFile = require('../utils/randomFile');
 
+// const router = express.Router();
 const router = new express.Router();
 
 router.post('/users', async (req, res) => {
     const user = new User(req.body);
 
     try {
+        console.log('save function: ', user.save.toString());
         const result = await user.save();
         res.send(result);
     } catch (error) {
