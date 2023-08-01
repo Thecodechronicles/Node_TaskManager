@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs')
 
 const userSchema = mongoose.Schema({
     name: {
@@ -22,7 +23,7 @@ const userSchema = mongoose.Schema({
         required: true,
         trim: true,
         minlength: 8,
-        lowercase: true,
+        // lowercase: true, // it was necessary to comment this out because, it will change hashed password(bcypt) into lowercase
         validate(value) {
             if (value.toLowerCase().includes('password')) {
                 throw new Error("password can't contain 'password'");
@@ -39,8 +40,14 @@ const userSchema = mongoose.Schema({
     }
 });
 
-userSchema.pre('save', function (next) {
+userSchema.pre('save', async function (next) {
     console.log('It has run before save');
+
+    const user = this;
+
+    if (user.isModified('password')) {
+        user.password = await bcrypt.hash(user.password, 8);
+    }
 
     // console.log(next.toString());
 

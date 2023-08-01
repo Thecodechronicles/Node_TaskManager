@@ -10,8 +10,9 @@ router.post('/users', async (req, res) => {
     const user = new User(req.body);
 
     try {
-        console.log('save function: ', user.save.toString());
+        // console.log('save function: ', user.save.toString());
         const result = await user.save();
+
         res.send(result);
     } catch (error) {
         HandleForError(error, res);
@@ -60,7 +61,11 @@ router.patch('/users/:id', async (req, res) => {
     }
 
     try {
-        const result = await User.findByIdAndUpdate(_Id, req.body, { new: true, runValidators: true });
+        // const result = await User.findByIdAndUpdate(_Id, req.body, { new: true, runValidators: true });
+        const user = await User.findById(_Id);
+
+        updateFeilds.forEach((update) => user[update] = req.body[update]);
+        const result = await user.save();
 
         if (!result) {
             return res.status(400).send('Id Not Found !');
