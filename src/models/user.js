@@ -47,6 +47,7 @@ userSchema.pre('save', async function (next) {
 
     if (user.isModified('password')) {
         user.password = await bcrypt.hash(user.password, 8);
+        // user.password is the setter method provided by mongoose on user object
     }
 
     // console.log(next.toString());
