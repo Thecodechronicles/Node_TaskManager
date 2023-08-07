@@ -10,8 +10,10 @@ const userSchema = mongoose.Schema({
     },
     email: {
         type: String,
+        unique: true,
         required: true,
         trim: true,
+        lowercase: true,
         validate(value) {
             if (!validator.isEmail(value)) {
                 throw new Error("Given value is not a vaid email");
@@ -39,6 +41,23 @@ const userSchema = mongoose.Schema({
         }
     }
 });
+
+userSchema.statics.findByCredentials = async (email, password) => {
+    // const User = this;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        throw new Error('invalid email !');
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+
+    if (!match) {
+        throw new Error('invalid password !');
+    }
+
+    return user;
+}
 
 userSchema.pre('save', async function (next) {
     console.log('It has run before save');
