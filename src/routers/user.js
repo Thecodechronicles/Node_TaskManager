@@ -2,16 +2,13 @@ const express = require('express');
 const User = require('../models/user');
 const HandleForError = require('../utils/error-handle');
 const auth = require('../middleware/auth');
-// const RandomFile = require('../utils/randomFile');
 
-// const router = express.Router();
 const router = new express.Router();
 
 router.post('/users', async (req, res) => {
     const user = new User(req.body);
 
     try {
-        // console.log('save function: ', user.save.toString());
         await user.save();
         const token = await user.generateAuthToken();
         res.send({ user, token });
@@ -59,20 +56,6 @@ router.get('/user/logoutall', auth, async (req, res, next) => {
     }
 });
 
-// router.get('/users', async (req, res) => {
-
-//     try {
-//         const result = await User.find();
-
-//         if (!result) {
-//             return res.status(500).send('Not Found !');
-//         }
-//         res.send(result);
-//     } catch (error) {
-//         HandleForError(error, res);
-//     }
-// });
-
 router.get('/users/me', auth, async (req, res) => {
 
     res.status(200).send({ user: req.user });
@@ -106,10 +89,8 @@ router.patch('/users/:id', async (req, res) => {
     }
 
     try {
-        // const result = await User.findByIdAndUpdate(_Id, req.body, { new: true, runValidators: true });
         const user = await User.findById(_Id);
 
-        // user._id = "64c7dd0e3fb211d19a946eeb" // found id "64c80350a5f9c7e5cca18cca" in user object but id chenged to "64c7dd0e3fb211d19a946eeb", the updation would hence be performed on changed id
         updateFeilds.forEach((update) => user[update] = req.body[update]);
         const result = await user.save();
 

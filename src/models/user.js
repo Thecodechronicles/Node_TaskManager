@@ -26,7 +26,6 @@ const userSchema = mongoose.Schema({
         required: true,
         trim: true,
         minlength: 8,
-        // lowercase: true, // it was necessary to comment this out because, it will change hashed password(bcypt) into lowercase
         validate(value) {
             if (value.toLowerCase().includes('password')) {
                 throw new Error("password can't contain 'password'");
@@ -62,9 +61,7 @@ userSchema.methods.generateAuthToken = async function () {
 }
 
 userSchema.statics.findByCredentials = async (email, password) => {
-    // const User = this;
     const user = await User.findOne({ email });
-
 
     if (!user) {
         throw new Error('invalid email !');
@@ -86,10 +83,7 @@ userSchema.pre('save', async function (next) {
 
     if (user.isModified('password')) {
         user.password = await bcrypt.hash(user.password, 8);
-        // user.password is the setter method provided by mongoose on user object
     }
-
-    // console.log(next.toString());
 
     next();
 });
