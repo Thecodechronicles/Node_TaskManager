@@ -1,7 +1,7 @@
 const express = require('express');
 const User = require('../models/user');
 const HandleForError = require('../utils/error-handle');
-// const RandomFile = require('../utils/randomFile');
+const auth = require('../middleware/auth');
 
 const router = new express.Router();
 
@@ -9,25 +9,56 @@ router.post('/users', async (req, res) => {
     const user = new User(req.body);
 
     try {
-        const result = await user.save();
-        res.send(result);
+        await user.save();
+        const token = await user.generateAuthToken();
+        res.send({ user, token });
     } catch (error) {
         HandleForError(error, res);
     }
 });
 
-router.get('/users', async (req, res) => {
+router.post('/user/login', async (req, res) => {
 
     try {
-        const result = await User.find();
-
-        if (!result) {
-            return res.status(500).send('Not Found !');
-        }
-        res.send(result);
+        const user = await User.findByCredentials(req.body.email, req.body.password);
+        const token = await user.generateAuthToken();
+        res.status(200).send({ user, token });
     } catch (error) {
         HandleForError(error, res);
     }
+});
+
+router.get('/user/logout', auth, async (req, res, next) => {
+
+    try {
+        req.user.tokens = req.user.tokens.filter((token) => {
+            return token.token !== req.token;
+        });
+
+        await req.user.save();
+        res.send();
+
+    } catch (e) {
+        res.status(500).send()
+    }
+});
+
+router.get('/user/logoutall', auth, async (req, res, next) => {
+
+    try {
+        req.user.tokens = [];
+
+        await req.user.save();
+        res.send();
+
+    } catch (e) {
+        res.status(500).send()
+    }
+});
+
+router.get('/users/me', auth, async (req, res) => {
+
+    res.status(200).send({ user: req.user });
 });
 
 router.get('/users/:id', async (req, res) => {
@@ -58,7 +89,10 @@ router.patch('/users/:id', async (req, res) => {
     }
 
     try {
-        const result = await User.findByIdAndUpdate(_Id, req.body, { new: true, runValidators: true });
+        const user = await User.findById(_Id);
+
+        updateFeilds.forEach((update) => user[update] = req.body[update]);
+        const result = await user.save();
 
         if (!result) {
             return res.status(400).send('Id Not Found !');

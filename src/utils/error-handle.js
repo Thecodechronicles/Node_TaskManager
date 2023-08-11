@@ -27,7 +27,7 @@ const handleForError = (error, res) => {
     }
     else {
         console.log('error ', error);
-        res.status(500).send({ error });
+        res.status(500).send({ error: error.message });
     }
 }
 
