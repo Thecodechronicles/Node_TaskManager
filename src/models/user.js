@@ -63,6 +63,13 @@ userSchema.methods.generateAuthToken = async function () {
 userSchema.statics.findByCredentials = async (email, password) => {
     const user = await User.findOne({ email });
 
+    // console.log('user: ', user);
+    // user.email = 11;
+    // const userObj = user.toObject();
+    // userObj.email = 11;
+    // console.log('user_toObject(): ', userObj);
+    // console.log('user_toJSON(); ', user.toJSON());
+
     if (!user) {
         throw new Error('invalid email !');
     }
