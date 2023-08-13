@@ -91,13 +91,12 @@ router.patch('/users/:id', async (req, res) => {
     try {
         const user = await User.findById(_Id);
 
-        updateFeilds.forEach((update) => user[update] = req.body[update]);
-        const result = await user.save();
-
-        if (!result) {
+        if (!user) {
             return res.status(400).send('Id Not Found !');
         }
 
+        updateFeilds.forEach((update) => user[update] = req.body[update]);
+        await user.save();
         res.status(200).send(result);
     } catch (error) {
         HandleForError(error, res);
