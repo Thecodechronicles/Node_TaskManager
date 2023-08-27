@@ -5,6 +5,10 @@ const auth = require('../middleware/auth');
 
 const router = new express.Router();
 
+// router.get('/users', (req, res) => {
+//     res.status(302).redirect('/abc');
+// })
+
 router.post('/users', async (req, res) => {
     const user = new User(req.body);
 
